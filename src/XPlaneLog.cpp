@@ -44,7 +44,9 @@ void XPlaneLog::init(const std::string &plugin_name)
                     { return !std::isalnum(c) && c != '_'; }, '_');
 
     std::filesystem::path logFileName = sanitized_plugin_name + ".log";
-    std::filesystem::path logFilePath = path.parent_path() / logFileName;
+    // Place log file in plugin root directory (not platform-specific subfolder)
+    // Go up two levels: from win_x64/plugin.xpl -> win_x64/ -> SimBreviloquent/
+    std::filesystem::path logFilePath = path.parent_path().parent_path() / logFileName;
 
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
     
