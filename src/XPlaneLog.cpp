@@ -67,8 +67,8 @@ void XPlaneLog::init(const std::string &plugin_name)
     shared_logger->set_formatter(std::make_unique<XPlaneLog::Formatter>());
     spdlog::register_logger(shared_logger);
 
-    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-    spdlog::flush_on(spdlog::level::info);   // Flush logs on info level and higher
+    spdlog::set_level(spdlog::level::info); // Set global log level to info (production)
+    spdlog::flush_on(spdlog::level::info);  // Flush logs on info level and higher
 }
 
 void XPlaneLog::trace(const std::string &message)
