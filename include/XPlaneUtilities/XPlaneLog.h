@@ -1,9 +1,5 @@
-#pragma once
-
-/**
- * @file XPlaneLog.h
- * @brief Advanced logging system for X-Plane plugins with spdlog integration
- */
+#ifndef XPLANELOG_H
+#define XPLANELOG_H
 
 // Standard Library Headers
 #include <string> // For std::string
@@ -15,93 +11,35 @@
 #include <spdlog/sinks/base_sink.h> // For spdlog::sinks::base_sink
 #include <spdlog/details/log_msg.h> // For spdlog::details::log_msg
 
-/**
- * @brief Advanced logging system for X-Plane plugins
- * 
- * XPlaneLog provides a modern C++ logging interface built on top of spdlog.
- * It automatically creates multiple sinks:
- * - Console output (with colors)
- * - File output (plugin-specific log file)
- * - X-Plane debug output (via XPLMDebugString)
- * 
- * The logger is registered globally as "xplane" so other libraries can use it.
- * 
- * @example
- * ```cpp
- * // Initialize once in your plugin
- * XPlaneLog::init("MyPlugin");
- * 
- * // Use throughout your code
- * XPlaneLog::info("Plugin initialized");
- * XPlaneLog::error("Error occurred: {}", error_message);
- * 
- * // Other libraries can access the same logger
- * if (auto logger = spdlog::get("xplane")) {
- *     logger->info("Message from library");
- * }
- * ```
- */
 class XPlaneLog
 {
 public:
-    /**
-     * @brief Initialize the logging system
-     * @param plugin_name Name of the plugin (used for log file naming)
-     * 
-     * Creates a multi-sink logger with console, file, and X-Plane debug output.
-     * Registers the logger globally as "xplane" for use by other libraries.
-     * Safe to call multiple times - subsequent calls are ignored.
-     */
+    // Initialize the logger
     static void init(const std::string &plugin_name);
 
-    /**
-     * @brief Log a trace message
-     * @param message Message to log
-     */
+    // Shutdown the logger and clean up resources
+    static void shutdown();
+
+    // Log a trace message
     static void trace(const std::string &message);
 
-    /**
-     * @brief Log a debug message
-     * @param message Message to log
-     */
+    // Log a debug message
     static void debug(const std::string &message);
 
-    /**
-     * @brief Log an info message
-     * @param message Message to log
-     */
+    // Log an info message
     static void info(const std::string &message);
 
-    /**
-     * @brief Log a warning message
-     * @param message Message to log
-     */
+    // Log a warning message
     static void warn(const std::string &message);
 
-    /**
-     * @brief Log an error message
-     * @param message Message to log
-     */
+    // Log an error message
     static void error(const std::string &message);
 
-    /**
-     * @brief Log a critical message
-     * @param message Message to log
-     */
+    // Log a critical message
     static void critical(const std::string &message);
 
-    /**
-     * @brief Get the underlying spdlog logger instance
-     * @return Shared pointer to the logger, or nullptr if not initialized
-     */
-    static std::shared_ptr<spdlog::logger> getLogger() { return logger; }
-
 private:
-    /**
-     * @brief Custom sink for X-Plane debug output
-     * 
-     * Formats log messages and sends them to X-Plane's Log.txt via XPLMDebugString.
-     */
+    // Custom sink for X-Plane
     class Sink : public spdlog::sinks::base_sink<std::mutex>
     {
     protected:
@@ -109,12 +47,7 @@ private:
         void flush_() override;
     };
 
-    /**
-     * @brief Custom formatter for consistent log formatting
-     * 
-     * Provides consistent timestamp, logger name, log level, and message formatting
-     * across all sinks. Ensures proper newline handling for X-Plane compatibility.
-     */
+    // Custom formatter for X-Plane
     class Formatter : public spdlog::formatter
     {
     public:
@@ -124,9 +57,30 @@ private:
             return std::make_unique<Formatter>(*this);
         }
 
-        virtual ~Formatter() = default;
+        virtual ~Formatter() {} // Required for abstract class
     };
 
-    /// Shared logger instance
     static std::shared_ptr<spdlog::logger> logger;
 };
+
+// Compile-time logging macros that eliminate strings from production binaries
+// These macros completely remove debug/trace logging code in NDEBUG builds
+// preventing sensitive information from appearing in the binary
+
+#ifdef NDEBUG
+    // Production build: strip out TRACE and DEBUG completely
+    #define XPLANE_LOG_TRACE(fmt, ...) ((void)0)
+    #define XPLANE_LOG_DEBUG(fmt, ...) ((void)0)
+    #define XPLANE_LOG_INFO(fmt, ...)  spdlog::info(fmt, ##__VA_ARGS__)
+    #define XPLANE_LOG_WARN(fmt, ...)  spdlog::warn(fmt, ##__VA_ARGS__)
+    #define XPLANE_LOG_ERROR(fmt, ...) spdlog::error(fmt, ##__VA_ARGS__)
+#else
+    // Debug build: include all logging levels
+    #define XPLANE_LOG_TRACE(fmt, ...) spdlog::trace(fmt, ##__VA_ARGS__)
+    #define XPLANE_LOG_DEBUG(fmt, ...) spdlog::debug(fmt, ##__VA_ARGS__)
+    #define XPLANE_LOG_INFO(fmt, ...)  spdlog::info(fmt, ##__VA_ARGS__)
+    #define XPLANE_LOG_WARN(fmt, ...)  spdlog::warn(fmt, ##__VA_ARGS__)
+    #define XPLANE_LOG_ERROR(fmt, ...) spdlog::error(fmt, ##__VA_ARGS__)
+#endif
+
+#endif // XPLANELOG_H

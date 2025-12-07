@@ -1,110 +1,39 @@
-#pragma once
-
-/**
- * @file MenuHandler.h
- * @brief Simplified X-Plane menu creation and management
- */
+#ifndef MENUHANDLER_H
+#define MENUHANDLER_H
 
 #include <string>
 #include <map>
 #include <functional>
+#include <memory>
+#include <vector>
 
 // Forward declaration of XPLMMenuID
 typedef void *XPLMMenuID;
 
-/**
- * @brief Simplified menu item management for X-Plane plugins
- * 
- * MenuHandler provides a modern C++ interface for creating and managing
- * X-Plane plugin menus with automatic cleanup and lambda support.
- * 
- * @example
- * ```cpp
- * // Create a main menu
- * MenuItem mainMenu("My Plugin");
- * 
- * // Add menu items with lambda callbacks
- * mainMenu.addSubItem("Settings", []() {
- *     // Handle settings click
- * });
- * 
- * mainMenu.addSubItem("About", []() {
- *     // Show about dialog
- * });
- * ```
- */
 class MenuItem
 {
 public:
-    /**
-     * @brief Create a new menu item
-     * @param title The display title for the menu
-     * 
-     * Creates a new menu in X-Plane's plugin menu system.
-     * The menu is automatically cleaned up when the MenuItem is destroyed.
-     */
-    explicit MenuItem(const std::string &title);
-
-    /**
-     * @brief Destructor - automatically cleans up X-Plane menu resources
-     */
+    // Constructor and Destructor
+    MenuItem(const std::string &title);
     ~MenuItem();
 
-    // Disable copy construction and assignment
-    MenuItem(const MenuItem&) = delete;
-    MenuItem& operator=(const MenuItem&) = delete;
-
-    // Enable move construction and assignment
-    MenuItem(MenuItem&& other) noexcept;
-    MenuItem& operator=(MenuItem&& other) noexcept;
-
-    /**
-     * @brief Add a sub-menu item with a callback
-     * @param title The display title for the sub-item
-     * @param action Callback function to execute when item is selected
-     * 
-     * Adds a clickable item to this menu. The action callback will be
-     * invoked when the user selects this menu item.
-     */
+    // Member functions
     void addSubItem(const std::string &title, std::function<void()> action);
-
-    /**
-     * @brief Add a separator line to the menu
-     * 
-     * Adds a visual separator between menu items for better organization.
-     */
+    std::unique_ptr<MenuItem> addSubMenu(const std::string &title);
     void addSeparator();
 
-    /**
-     * @brief Enable or disable a menu item
-     * @param itemIndex Index of the item to modify (0-based)
-     * @param enabled True to enable, false to disable
-     */
-    void setItemEnabled(int itemIndex, bool enabled);
-
-    /**
-     * @brief Check if this menu item is valid
-     * @return True if the menu was created successfully
-     */
-    bool isValid() const { return m_menu_id != nullptr; }
-
 private:
-    /**
-     * @brief Static callback handler for X-Plane menu system
-     * @param menu_ref Menu reference from X-Plane
-     * @param item_ref Item reference from X-Plane
-     */
-    static void menuCallback(void* menu_ref, void* item_ref);
+    // Private constructor for submenu creation
+    MenuItem(const std::string &title, XPLMMenuID parent_menu, int item_idx);
 
-    /// X-Plane menu ID
+    // Static menu handler callback (AviTab pattern)
+    static void menuHandler(void *menuRef, void *itemRef);
+
+    // Member variables
+    XPLMMenuID m_parent_menu = nullptr;
     XPLMMenuID m_menu_id = nullptr;
-    
-    /// Our plugin's menu item ID in the parent menu
     int m_item_id = -1;
-    
-    /// Map of menu item indices to their callback functions
-    std::map<int, std::function<void()>> m_actions;
-    
-    /// Next available item index
-    int m_next_item_id = 0;
+    std::vector<std::function<void()>> m_callbacks;
 };
+
+#endif // MENUHANDLER_H
