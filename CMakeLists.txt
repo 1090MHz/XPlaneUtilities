@@ -15,32 +15,46 @@ option(XPLANE_UTILITIES_BUILD_TESTS "Build tests" ON)
 option(XPLANE_UTILITIES_BUILD_EXAMPLES "Build examples" ON)
 
 # Find dependencies
-# Note: When built as part of ImGuiSimBrief, spdlog and fmt are already available
-# When built standalone, add them as subdirectories from parent
-if(TARGET spdlog::spdlog)
-    # spdlog is already available (built as submodule)
-    message(STATUS "Using spdlog from parent project")
+# Priority order:
+# 1. Already available as target (from parent project)
+# 2. vcpkg (if CMAKE_TOOLCHAIN_FILE is set)
+# 3. Parent directory submodules (for ImGuiSimBrief integration)
+# 4. System-installed packages
+
+# Check if using vcpkg
+if(DEFINED CMAKE_TOOLCHAIN_FILE AND CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg")
+    set(USING_VCPKG TRUE)
+    message(STATUS "Using vcpkg for dependencies")
 else()
-    # Try to find spdlog in parent directory
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../spdlog/CMakeLists.txt")
-        message(STATUS "Adding spdlog from parent directory")
-        add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../spdlog" "${CMAKE_CURRENT_BINARY_DIR}/spdlog" EXCLUDE_FROM_ALL)
-    else()
-        find_package(spdlog REQUIRED)
-    endif()
+    set(USING_VCPKG FALSE)
 endif()
 
-if(TARGET fmt::fmt)
-    # fmt is already available (built as submodule)
-    message(STATUS "Using fmt from parent project")
+# spdlog
+if(TARGET spdlog::spdlog)
+    message(STATUS "Using spdlog from parent project")
+elseif(USING_VCPKG)
+    find_package(spdlog REQUIRED)
+    message(STATUS "Using spdlog from vcpkg")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../spdlog/CMakeLists.txt")
+    message(STATUS "Adding spdlog from parent directory")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../spdlog" "${CMAKE_CURRENT_BINARY_DIR}/spdlog" EXCLUDE_FROM_ALL)
 else()
-    # Try to find fmt in parent directory
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../fmt/CMakeLists.txt")
-        message(STATUS "Adding fmt from parent directory")
-        add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../fmt" "${CMAKE_CURRENT_BINARY_DIR}/fmt" EXCLUDE_FROM_ALL)
-    else()
-        find_package(fmt REQUIRED)
-    endif()
+    find_package(spdlog REQUIRED)
+    message(STATUS "Using system-installed spdlog")
+endif()
+
+# fmt
+if(TARGET fmt::fmt)
+    message(STATUS "Using fmt from parent project")
+elseif(USING_VCPKG)
+    find_package(fmt REQUIRED)
+    message(STATUS "Using fmt from vcpkg")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../fmt/CMakeLists.txt")
+    message(STATUS "Adding fmt from parent directory")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../fmt" "${CMAKE_CURRENT_BINARY_DIR}/fmt" EXCLUDE_FROM_ALL)
+else()
+    find_package(fmt REQUIRED)
+    message(STATUS "Using system-installed fmt")
 endif()
 
 # X-Plane SDK path (required for this library)
