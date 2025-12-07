@@ -1,117 +1,90 @@
-#include "XPlaneUtilities/MenuHandler.h"
-
-// X-Plane SDK Headers
 #include <XPLMDisplay.h>
 #include <XPLMMenus.h>
+#include <XPlaneUtilities/MenuHandler.h>
+#include <stdexcept>
 
-#include <functional>
-#include <map>
-#include <memory>
-#include <string>
-#include <utility> // For std::move
-
-MenuItem::MenuItem(const std::string &title)
+MenuItem::MenuItem(const std::string& title)
 {
-    m_item_id = XPLMAppendMenuItem(XPLMFindPluginsMenu(), title.c_str(), nullptr, 1);
-    m_menu_id = XPLMCreateMenu(title.c_str(), XPLMFindPluginsMenu(), m_item_id, menuCallback, this);
+    m_parent_menu = XPLMFindPluginsMenu();
+    m_item_id = XPLMAppendMenuItem(m_parent_menu, title.c_str(), nullptr, 0);
+
+    if (m_item_id < 0)
+    {
+        throw std::runtime_error("Couldn't create menu item: " + title);
+    }
+
+    m_menu_id = XPLMCreateMenu(title.c_str(), m_parent_menu, m_item_id, menuHandler, this);
+
+    if (!m_menu_id)
+    {
+        XPLMRemoveMenuItem(m_parent_menu, m_item_id);
+        throw std::runtime_error("Couldn't create menu: " + title);
+    }
+}
+
+MenuItem::MenuItem(const std::string& title, XPLMMenuID parent_menu, int item_idx)
+{
+    m_parent_menu = parent_menu;
+    m_item_id = XPLMAppendMenuItem(parent_menu, title.c_str(), nullptr, 0);
+
+    if (m_item_id < 0)
+    {
+        throw std::runtime_error("Couldn't create submenu item: " + title);
+    }
+
+    m_menu_id = XPLMCreateMenu(title.c_str(), parent_menu, m_item_id, menuHandler, this);
+
+    if (!m_menu_id)
+    {
+        XPLMRemoveMenuItem(parent_menu, m_item_id);
+        throw std::runtime_error("Couldn't create submenu: " + title);
+    }
 }
 
 MenuItem::~MenuItem()
 {
-    if (m_menu_id != nullptr)
+    if (m_menu_id)
     {
-        XPLMClearAllMenuItems(m_menu_id);
         XPLMDestroyMenu(m_menu_id);
+        m_menu_id = nullptr;
     }
-    if (m_item_id != -1)
+
+    if (m_item_id >= 0 && m_parent_menu)
     {
-        XPLMRemoveMenuItem(XPLMFindPluginsMenu(), m_item_id);
+        XPLMRemoveMenuItem(m_parent_menu, m_item_id);
+        m_item_id = -1;
     }
 }
 
-MenuItem::MenuItem(MenuItem&& other) noexcept
-    : m_menu_id(other.m_menu_id)
-    , m_item_id(other.m_item_id)
-    , m_actions(std::move(other.m_actions))
-    , m_next_item_id(other.m_next_item_id)
+void MenuItem::addSubItem(const std::string& title, std::function<void()> action)
 {
-    // Reset other object to prevent double cleanup
-    other.m_menu_id = nullptr;
-    other.m_item_id = -1;
-    other.m_next_item_id = 0;
-    
-    // Update the callback reference to point to this object
-    if (m_menu_id != nullptr)
-    {
-        // Note: X-Plane doesn't provide a way to change the callback reference
-        // This is a limitation of the X-Plane API
-    }
+    m_callbacks.push_back(action);
+    intptr_t idx = m_callbacks.size() - 1;
+    XPLMAppendMenuItem(m_menu_id, title.c_str(), reinterpret_cast<void*>(idx), 0);
 }
 
-MenuItem& MenuItem::operator=(MenuItem&& other) noexcept
+std::unique_ptr<MenuItem> MenuItem::addSubMenu(const std::string& title)
 {
-    if (this != &other)
-    {
-        // Clean up current resources
-        this->~MenuItem();
-        
-        // Move resources from other
-        m_menu_id = other.m_menu_id;
-        m_item_id = other.m_item_id;
-        m_actions = std::move(other.m_actions);
-        m_next_item_id = other.m_next_item_id;
-        
-        // Reset other object
-        other.m_menu_id = nullptr;
-        other.m_item_id = -1;
-        other.m_next_item_id = 0;
-        
-        // Update the callback reference to point to this object
-        if (m_menu_id != nullptr)
-        {
-            // Note: X-Plane doesn't provide a way to change the callback reference
-            // This is a limitation of the X-Plane API
-        }
-    }
-    return *this;
-}
-
-void MenuItem::addSubItem(const std::string &title, std::function<void()> action)
-{
-    if (m_menu_id != nullptr)
-    {
-        int item_id = m_next_item_id++;
-        m_actions[item_id] = std::move(action);
-        XPLMAppendMenuItem(m_menu_id, title.c_str(), reinterpret_cast<void *>(static_cast<intptr_t>(item_id)), 1);
-    }
+    auto submenu = std::unique_ptr<MenuItem>(new MenuItem(title, m_menu_id, m_item_id));
+    return submenu;
 }
 
 void MenuItem::addSeparator()
 {
-    if (m_menu_id != nullptr)
-    {
-        XPLMAppendMenuSeparator(m_menu_id);
-    }
+    XPLMAppendMenuSeparator(m_menu_id);
 }
 
-void MenuItem::setItemEnabled(int itemIndex, bool enabled)
+void MenuItem::menuHandler(void* menuRef, void* itemRef)
 {
-    if (m_menu_id != nullptr && itemIndex >= 0)
-    {
-        XPLMEnableMenuItem(m_menu_id, itemIndex, enabled ? 1 : 0);
-    }
-}
+    MenuItem* menu = static_cast<MenuItem*>(menuRef);
+    auto idx = reinterpret_cast<intptr_t>(itemRef);
 
-void MenuItem::menuCallback(void *menu_ref, void *item_ref)
-{
-    MenuItem *menu = static_cast<MenuItem *>(menu_ref);
-    if (menu != nullptr)
+    if (idx >= 0 && idx < static_cast<intptr_t>(menu->m_callbacks.size()))
     {
-        intptr_t item_id = reinterpret_cast<intptr_t>(item_ref);
-        auto it = menu->m_actions.find(static_cast<int>(item_id));
-        if (it != menu->m_actions.end() && it->second)
+        std::function<void()> callback = menu->m_callbacks[idx];
+        if (callback)
         {
-            it->second();
+            callback();
         }
     }
 }

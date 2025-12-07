@@ -1,0 +1,54 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+
+    - name: Download X-Plane SDK
+      run: |
+        mkdir -p third_party/libs
+        cd third_party/libs
+        curl -L -o XPSDK410.zip https://developer.x-plane.com/wp-content/plugins/code-sample-generation/sdk_zip_files/XPSDK410.zip
+        unzip -q XPSDK410.zip
+        mv SDK XPSDK410
+      shell: bash
+
+    - name: Configure CMake
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DXPLANE_SDK_PATH=third_party/libs/XPSDK410 -DXPLANE_UTILITIES_BUILD_TESTS=OFF -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
+      shell: bash
+
+    - name: Build
+      run: cmake --build build --config ${{matrix.build_type}}
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run clang-format
+      run: |
+        find src include -name "*.cpp" -o -name "*.h" | xargs clang-format --dry-run
