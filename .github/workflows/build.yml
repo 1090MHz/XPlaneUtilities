@@ -34,16 +34,11 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{github.workspace}}/build \
-              -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-              -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-              -DXPLANE_SDK_PATH=${{github.workspace}}/third_party/libs/XPSDK410 \
-              -DXPLANE_UTILITIES_BUILD_TESTS=OFF \
-              -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DXPLANE_SDK_PATH=third_party/libs/XPSDK410 -DXPLANE_UTILITIES_BUILD_TESTS=OFF -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
       shell: bash
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+      run: cmake --build build --config ${{matrix.build_type}}
 
   code-quality:
     runs-on: ubuntu-latest
