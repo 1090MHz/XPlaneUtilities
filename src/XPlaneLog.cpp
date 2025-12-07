@@ -14,15 +14,14 @@
 #include <spdlog/spdlog.h>                   // For spdlog logging functions
 
 // X-Plane SDK Headers
-#include "XPLMUtilities.h" // For XPLMDebugString and XPLMGetPluginInfo
 #include "XPLMPlugin.h"    // For XPLMGetMyID
+#include "XPLMUtilities.h" // For XPLMDebugString and XPLMGetPluginInfo
 
 std::shared_ptr<spdlog::logger> XPlaneLog::logger = nullptr;
 
 // Initialize logger with plugin name
-void XPlaneLog::init(const std::string &plugin_name)
+void XPlaneLog::init(const std::string& plugin_name)
 {
-
     // Ensure the logger is not already initialized
     if (logger)
     {
@@ -45,13 +44,15 @@ void XPlaneLog::init(const std::string &plugin_name)
 
     // Sanitize plugin_name to be a valid filename
     std::string sanitized_plugin_name = plugin_name;
-    std::replace_if(sanitized_plugin_name.begin(), sanitized_plugin_name.end(), [](char c)
-                    { return !std::isalnum(c) && c != '_'; }, '_');
+    std::replace_if(
+        sanitized_plugin_name.begin(), sanitized_plugin_name.end(),
+        [](char c) { return !std::isalnum(c) && c != '_'; }, '_');
 
     std::filesystem::path logFileName = sanitized_plugin_name + ".log";
     std::filesystem::path logFilePath = path.parent_path() / logFileName;
 
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
+    auto file_sink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
 
     spdlog::sinks_init_list sink_list = {console_sink, file_sink, xplane_sink};
     logger = std::make_shared<spdlog::logger>(plugin_name, sink_list.begin(), sink_list.end());
@@ -67,11 +68,12 @@ void XPlaneLog::init(const std::string &plugin_name)
 
     spdlog::set_default_logger(logger);
 #ifdef NDEBUG
-    spdlog::set_level(spdlog::level::info);  // Production: only info, warn, error, critical (no debug/trace)
+    spdlog::set_level(
+        spdlog::level::info); // Production: only info, warn, error, critical (no debug/trace)
 #else
     spdlog::set_level(spdlog::level::trace); // Debug: show all messages including trace and debug
 #endif
-    spdlog::flush_on(spdlog::level::info);   // Flush logs on info level and higher
+    spdlog::flush_on(spdlog::level::info); // Flush logs on info level and higher
 }
 
 void XPlaneLog::shutdown()
@@ -84,38 +86,38 @@ void XPlaneLog::shutdown()
     }
 }
 
-void XPlaneLog::trace(const std::string &message)
+void XPlaneLog::trace(const std::string& message)
 {
     logger->trace(message);
 }
 
-void XPlaneLog::debug(const std::string &message)
+void XPlaneLog::debug(const std::string& message)
 {
     logger->debug(message);
 }
 
-void XPlaneLog::info(const std::string &message)
+void XPlaneLog::info(const std::string& message)
 {
     logger->info(message);
 }
 
-void XPlaneLog::warn(const std::string &message)
+void XPlaneLog::warn(const std::string& message)
 {
     logger->warn(message);
 }
 
-void XPlaneLog::error(const std::string &message)
+void XPlaneLog::error(const std::string& message)
 {
     logger->error(message);
 }
 
-void XPlaneLog::critical(const std::string &message)
+void XPlaneLog::critical(const std::string& message)
 {
     logger->critical(message);
 }
 
 // Implementation of the custom sink for X-Plane
-void XPlaneLog::Sink::sink_it_(const spdlog::details::log_msg &msg)
+void XPlaneLog::Sink::sink_it_(const spdlog::details::log_msg& msg)
 {
     // Format the message
     spdlog::memory_buf_t formatted;
@@ -130,7 +132,7 @@ void XPlaneLog::Sink::flush_()
     // Flush function can be empty as XPLMDebugString doesn't have a corresponding flush function
 }
 
-void XPlaneLog::Formatter::format(const spdlog::details::log_msg &msg, spdlog::memory_buf_t &dest)
+void XPlaneLog::Formatter::format(const spdlog::details::log_msg& msg, spdlog::memory_buf_t& dest)
 {
     // Extract and convert log level to uppercase
     std::string log_level = spdlog::level::to_string_view(msg.level).data();
@@ -150,8 +152,10 @@ void XPlaneLog::Formatter::format(const spdlog::details::log_msg &msg, spdlog::m
     if (!formatted_str.empty())
     {
         // Remove any existing CR or LF characters
-        formatted_str.erase(std::remove(formatted_str.begin(), formatted_str.end(), '\r'), formatted_str.end());
-        formatted_str.erase(std::remove(formatted_str.begin(), formatted_str.end(), '\n'), formatted_str.end());
+        formatted_str.erase(std::remove(formatted_str.begin(), formatted_str.end(), '\r'),
+                            formatted_str.end());
+        formatted_str.erase(std::remove(formatted_str.begin(), formatted_str.end(), '\n'),
+                            formatted_str.end());
         // Add a single newline character
         formatted_str += '\n';
     }
