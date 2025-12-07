@@ -1,69 +1,78 @@
 #include <XPlaneUtilities/DataRefImport.h>
 #include <XPlaneUtilities/XPlaneLog.h>
 
-namespace XPlaneUtilities {
+namespace XPlaneUtilities
+{
 
 // Constructor - throws if dataref not found
-template<typename T>
-DataRefImport<T>::DataRefImport(const std::string &name)
+template <typename T> DataRefImport<T>::DataRefImport(const std::string& name)
 {
     handle = XPLMFindDataRef(name.c_str());
-    if (!handle) {
+    if (!handle)
+    {
         throw std::runtime_error("Invalid DataRef: " + name);
     }
 }
 
 // Constructor with default value - uses default if dataref not found
-template<typename T>
-DataRefImport<T>::DataRefImport(const std::string &name, T defaultValue)
+template <typename T> DataRefImport<T>::DataRefImport(const std::string& name, T defaultValue)
 {
     handle = XPLMFindDataRef(name.c_str());
-    if (!handle) {
+    if (!handle)
+    {
         XPlaneLog::warn("DataRef '" + name + "' not available, using default value");
         overrideValue = defaultValue;
     }
 }
 
 // Template specialization for int type
-template<>
-DataRefImport<int>::operator int()
+template <> DataRefImport<int>::operator int()
 {
-    if (handle) {
+    if (handle)
+    {
         return XPLMGetDatai(handle);
-    } else {
+    }
+    else
+    {
         return overrideValue;
     }
 }
 
 // Template specialization for bool type
-template<>
-DataRefImport<bool>::operator bool()
+template <> DataRefImport<bool>::operator bool()
 {
-    if (handle) {
+    if (handle)
+    {
         return XPLMGetDatai(handle) != 0;
-    } else {
+    }
+    else
+    {
         return overrideValue;
     }
 }
 
 // Template specialization for float type
-template<>
-DataRefImport<float>::operator float()
+template <> DataRefImport<float>::operator float()
 {
-    if (handle) {
+    if (handle)
+    {
         return XPLMGetDataf(handle);
-    } else {
+    }
+    else
+    {
         return overrideValue;
     }
 }
 
 // Template specialization for double type
-template<>
-DataRefImport<double>::operator double()
+template <> DataRefImport<double>::operator double()
 {
-    if (handle) {
+    if (handle)
+    {
         return XPLMGetDatad(handle);
-    } else {
+    }
+    else
+    {
         return overrideValue;
     }
 }
