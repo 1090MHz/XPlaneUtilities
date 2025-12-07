@@ -1,0 +1,13 @@
+# XPlaneUtilities CMake Package Configuration File
+#
+# This file is only used when XPlaneUtilities is installed system-wide
+# (via `cmake --install` with XPLANE_UTILITIES_INSTALL=ON).
+#
+# NOT NEEDED for submodule usage (add_subdirectory) - which is the default.
+# The library is designed to be used as a git submodule without installation.
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/XPlaneUtilitiesTargets.cmake")
+
+check_required_components(XPlaneUtilities)
