@@ -73,12 +73,18 @@ message(STATUS "X-Plane SDK found at: ${XPLANE_SDK_PATH}")
 set(XPLANE_UTILITIES_SOURCES
     src/XPlaneLog.cpp
     src/MenuHandler.cpp
+    src/DataRefImport.cpp
+    src/DataRefExport.cpp
+    src/FlightDataProvider.cpp
 )
 
 # Library headers
 set(XPLANE_UTILITIES_HEADERS
     include/XPlaneUtilities/XPlaneLog.h
     include/XPlaneUtilities/MenuHandler.h
+    include/XPlaneUtilities/DataRefImport.h
+    include/XPlaneUtilities/DataRefExport.h
+    include/XPlaneUtilities/FlightDataProvider.h
     include/XPlaneUtilities/XPlaneUtilities.h
 )
 
