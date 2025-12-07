@@ -4,6 +4,7 @@
   "description": "Modern C++17 utility library for X-Plane plugin development",
   "homepage": "https://github.com/1090MHz/XPlaneUtilities",
   "license": "MIT",
+  "builtin-baseline": "ab2977be50c702126336e5088f4836060733c899",
   "dependencies": [
     {
       "name": "spdlog",
@@ -12,16 +13,6 @@
     {
       "name": "fmt",
       "default-features": false
-    }
-  ],
-  "overrides": [
-    {
-      "name": "spdlog",
-      "version": "1.12.0"
-    },
-    {
-      "name": "fmt",
-      "version": "10.0.0"
     }
   ],
   "features": {
