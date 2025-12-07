@@ -40,6 +40,7 @@ jobs:
               -DXPLANE_SDK_PATH=${{github.workspace}}/third_party/libs/XPSDK410 \
               -DXPLANE_UTILITIES_BUILD_TESTS=OFF \
               -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
+      shell: bash
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
