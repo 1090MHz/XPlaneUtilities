@@ -18,7 +18,7 @@ option(XPLANE_UTILITIES_BUILD_EXAMPLES "Build examples" ON)
 # Priority order:
 # 1. Already available as target (from parent project)
 # 2. vcpkg (if CMAKE_TOOLCHAIN_FILE is set)
-# 3. Parent directory submodules (for ImGuiSimBrief integration)
+# 3. Parent directory submodules (for embedding in other projects)
 # 4. System-installed packages
 
 # Check if using vcpkg
