@@ -27,7 +27,7 @@ jobs:
       run: |
         mkdir -p third_party/libs
         cd third_party/libs
-        wget -O XPSDK410.zip https://developer.x-plane.com/wp-content/plugins/code-sample-generation/sdk_zip_files/XPSDK410.zip
+        curl -L -o XPSDK410.zip https://developer.x-plane.com/wp-content/plugins/code-sample-generation/sdk_zip_files/XPSDK410.zip
         unzip -q XPSDK410.zip
         mv SDK XPSDK410
       shell: bash
