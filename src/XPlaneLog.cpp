@@ -1,12 +1,10 @@
-#include "XPlaneUtilities/XPlaneLog.h"
+#include <XPlaneUtilities/XPlaneLog.h>
 
 // Standard Library Headers
-#include <algorithm>   // For std::transform, std::replace_if
-#include <filesystem>  // For handling file system paths
-#include <memory>      // For std::shared_ptr and std::make_shared
-#include <mutex>       // For std::mutex used in custom sink
-#include <string>      // For std::string
-#include <cctype>      // For std::isalnum
+#include <filesystem> // For handling file system paths
+#include <memory>     // For std::shared_ptr and std::make_shared
+#include <mutex>      // For std::mutex used in custom sink
+#include <string>     // For std::string
 
 // Third-Party Library Headers
 #include <spdlog/details/log_msg.h>          // For spdlog::details::log_msg
@@ -21,84 +19,99 @@
 
 std::shared_ptr<spdlog::logger> XPlaneLog::logger = nullptr;
 
+// Initialize logger with plugin name
 void XPlaneLog::init(const std::string &plugin_name)
 {
+
     // Ensure the logger is not already initialized
     if (logger)
     {
         return;
     }
 
-    // Create sinks
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    // Create an XPlaneLog::Sink instance
     auto xplane_sink = std::make_shared<Sink>();
 
-    // Determine the plugin's directory for log file
+    // Optionally, create other sinks (e.g., console and file sinks)
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+
+    // Determine the plugin's directory
     char pluginPath[512];
     XPLMGetPluginInfo(XPLMGetMyID(), nullptr, pluginPath, nullptr, nullptr);
+
+    // Construct the path to Log.txt within the plugin's directory
     std::filesystem::path path(pluginPath);
-    
+    // std::filesystem::path logFileName = "Log.txt";
+
     // Sanitize plugin_name to be a valid filename
     std::string sanitized_plugin_name = plugin_name;
     std::replace_if(sanitized_plugin_name.begin(), sanitized_plugin_name.end(), [](char c)
                     { return !std::isalnum(c) && c != '_'; }, '_');
 
     std::filesystem::path logFileName = sanitized_plugin_name + ".log";
-    // Place log file in plugin root directory (not platform-specific subfolder)
-    // Go up two levels: from win_x64/plugin.xpl -> win_x64/ -> SimBreviloquent/
-    std::filesystem::path logFilePath = path.parent_path().parent_path() / logFileName;
+    std::filesystem::path logFilePath = path.parent_path() / logFileName;
 
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
-    
-    spdlog::sinks_init_list sink_list = {console_sink, file_sink, xplane_sink};
 
-    // Create logger with appropriate sinks
+    spdlog::sinks_init_list sink_list = {console_sink, file_sink, xplane_sink};
     logger = std::make_shared<spdlog::logger>(plugin_name, sink_list.begin(), sink_list.end());
 
     // Set a custom formatter for the logger
     logger->set_formatter(std::make_unique<XPlaneLog::Formatter>());
 
-    // Register as default logger and also with the "xplane" name for shared access
-    spdlog::set_default_logger(logger);
+    // Register the logger with spdlog registry for future extensibility:
+    // - Allows retrieval by name using spdlog::get("plugin_name")
+    // - Enables multiple named loggers (e.g., separate loggers for different subsystems)
+    // - Facilitates different log files/sinks per component
     spdlog::register_logger(logger);
-    
-    // Also register with a common name that other libraries can use
-    auto shared_logger = std::make_shared<spdlog::logger>("xplane", sink_list.begin(), sink_list.end());
-    shared_logger->set_formatter(std::make_unique<XPlaneLog::Formatter>());
-    spdlog::register_logger(shared_logger);
 
-    spdlog::set_level(spdlog::level::info); // Set global log level to info (production)
-    spdlog::flush_on(spdlog::level::info);  // Flush logs on info level and higher
+    spdlog::set_default_logger(logger);
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::info);  // Production: only info, warn, error, critical (no debug/trace)
+#else
+    spdlog::set_level(spdlog::level::trace); // Debug: show all messages including trace and debug
+#endif
+    spdlog::flush_on(spdlog::level::info);   // Flush logs on info level and higher
+}
+
+void XPlaneLog::shutdown()
+{
+    if (logger)
+    {
+        logger->flush();
+        spdlog::drop_all(); // Drops all registered loggers
+        logger = nullptr;
+    }
 }
 
 void XPlaneLog::trace(const std::string &message)
 {
-    if (logger) logger->trace(message);
+    logger->trace(message);
 }
 
 void XPlaneLog::debug(const std::string &message)
 {
-    if (logger) logger->debug(message);
+    logger->debug(message);
 }
 
 void XPlaneLog::info(const std::string &message)
 {
-    if (logger) logger->info(message);
+    logger->info(message);
 }
 
 void XPlaneLog::warn(const std::string &message)
 {
-    if (logger) logger->warn(message);
+    logger->warn(message);
 }
 
 void XPlaneLog::error(const std::string &message)
 {
-    if (logger) logger->error(message);
+    logger->error(message);
 }
 
 void XPlaneLog::critical(const std::string &message)
 {
-    if (logger) logger->critical(message);
+    logger->critical(message);
 }
 
 // Implementation of the custom sink for X-Plane
@@ -120,8 +133,7 @@ void XPlaneLog::Sink::flush_()
 void XPlaneLog::Formatter::format(const spdlog::details::log_msg &msg, spdlog::memory_buf_t &dest)
 {
     // Extract and convert log level to uppercase
-    auto level_sv = spdlog::level::to_string_view(msg.level);
-    std::string log_level(level_sv.data(), level_sv.size());
+    std::string log_level = spdlog::level::to_string_view(msg.level).data();
     std::transform(log_level.begin(), log_level.end(), log_level.begin(), ::toupper);
 
     // Create a custom pattern that includes the uppercase log level
