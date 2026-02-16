@@ -75,6 +75,9 @@ void XPlaneLog::init(const std::string& plugin_name)
     spdlog::set_level(spdlog::level::trace); // Debug: show all messages including trace and debug
 #endif
     spdlog::flush_on(spdlog::level::info); // Flush logs on info level and higher
+    
+    // Report where the log file is located
+    logger->info("spdlog file path: {}", logFilePath.string());
 }
 
 void XPlaneLog::shutdown()
