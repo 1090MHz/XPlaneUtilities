@@ -49,8 +49,8 @@ void XPlaneLog::init(const std::string& plugin_name)
         [](char c) { return !std::isalnum(c) && c != '_'; }, '_');
 
     std::filesystem::path logFileName = sanitized_plugin_name + ".log";
-    // Remove filename (.xpl) then go up one directory to get plugin root (e.g., SimBreviloquent/)
-    std::filesystem::path logFilePath = path.remove_filename().parent_path() / logFileName;
+    // Navigate up two levels: from win_x64/ImGuiSimBrief.xpl -> win_x64/ -> ImGuiSimBrief.refactor/
+    std::filesystem::path logFilePath = path.parent_path().parent_path() / logFileName;
 
     auto file_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
@@ -75,6 +75,9 @@ void XPlaneLog::init(const std::string& plugin_name)
     spdlog::set_level(spdlog::level::trace); // Debug: show all messages including trace and debug
 #endif
     spdlog::flush_on(spdlog::level::info); // Flush logs on info level and higher
+    
+    // Report where the log file is located
+    logger->info("spdlog file path: {}", logFilePath.string());
 }
 
 void XPlaneLog::shutdown()
