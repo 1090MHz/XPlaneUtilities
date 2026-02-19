@@ -6,14 +6,8 @@
   "license": "MIT",
   "builtin-baseline": "ce35b1a53aac26d7fcdb8ee1ef7a8e4eea02d27b",
   "dependencies": [
-    {
-      "name": "spdlog",
-      "default-features": false
-    },
-    {
-      "name": "fmt",
-      "default-features": false
-    }
+    "fmt",
+    "spdlog"
   ],
   "features": {
     "tests": {

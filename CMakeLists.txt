@@ -112,6 +112,12 @@ target_link_libraries(XPlaneUtilities
         fmt::fmt
 )
 
+# Configure spdlog to use external fmt library
+target_compile_definitions(XPlaneUtilities
+    PRIVATE
+        SPDLOG_FMT_EXTERNAL
+)
+
 # X-Plane SDK integration (required)
 target_include_directories(XPlaneUtilities
     PRIVATE
