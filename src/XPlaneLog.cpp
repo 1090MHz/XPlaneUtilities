@@ -7,6 +7,7 @@
 #include <string>     // For std::string
 
 // Third-Party Library Headers
+#include <fmt/format.h>                      // For fmt::to_string and fmt::format_to
 #include <spdlog/details/log_msg.h>          // For spdlog::details::log_msg
 #include <spdlog/pattern_formatter.h>        // For spdlog::pattern_formatter
 #include <spdlog/sinks/basic_file_sink.h>    // For spdlog::sinks::basic_file_sink_mt
