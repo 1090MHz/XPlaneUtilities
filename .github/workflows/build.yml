@@ -21,6 +21,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+
     - name: Download X-Plane SDK
       run: |
         mkdir -p third_party/libs
@@ -32,7 +37,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DXPLANE_SDK_PATH=third_party/libs/XPSDK410 -DXPLANE_UTILITIES_BUILD_TESTS=OFF -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DXPLANE_SDK_PATH=third_party/libs/XPSDK410 -DXPLANE_UTILITIES_BUILD_TESTS=OFF -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
       shell: bash
 
     - name: Build

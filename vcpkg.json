@@ -1,0 +1,26 @@
+{
+  "name": "xplane-utilities",
+  "version": "1.0.0",
+  "description": "Modern C++17 utility library for X-Plane plugin development",
+  "homepage": "https://github.com/1090MHz/XPlaneUtilities",
+  "license": "MIT",
+  "builtin-baseline": "ce35b1a53aac26d7fcdb8ee1ef7a8e4eea02d27b",
+  "dependencies": [
+    {
+      "name": "spdlog",
+      "default-features": false
+    },
+    {
+      "name": "fmt",
+      "default-features": false
+    }
+  ],
+  "features": {
+    "tests": {
+      "description": "Build unit tests",
+      "dependencies": [
+        "catch2"
+      ]
+    }
+  }
+}
