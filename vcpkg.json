@@ -8,12 +8,9 @@
   "dependencies": [
     {
       "name": "spdlog",
-      "default-features": false
+      "features": ["external-fmt"]
     },
-    {
-      "name": "fmt",
-      "default-features": false
-    }
+    "fmt"
   ],
   "features": {
     "tests": {
