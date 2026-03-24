@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\DataRefAccess.cpp" />
     <ClCompile Include="src\DataRefExport.cpp" />
     <ClCompile Include="src\DataRefImport.cpp" />
     <ClCompile Include="src\FlightDataProvider.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="src\XPlaneLog.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\XPlaneUtilities\DataRefAccess.h" />
     <ClInclude Include="include\XPlaneUtilities\DataRefExport.h" />
     <ClInclude Include="include\XPlaneUtilities\DataRefImport.h" />
     <ClInclude Include="include\XPlaneUtilities\FlightDataProvider.h" />

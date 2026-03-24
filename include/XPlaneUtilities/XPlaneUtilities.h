@@ -9,6 +9,7 @@
  */
 
 #include "XPlaneLog.h"
+#include "DataRefAccess.h"
 #include "MenuHandler.h"
 
 namespace XPlaneUtilities {
