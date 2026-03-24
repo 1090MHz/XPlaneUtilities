@@ -12,6 +12,7 @@ namespace XPlaneUtilities {
  * 
  * Based on AviTab's implementation, this template class simplifies
  * reading X-Plane datarefs with type safety and automatic conversion.
+ * For read/write access to an existing X-Plane dataref, use DataRefAccess.
  * 
  * The dataref handle is cached on construction, making repeated reads efficient.
  * 

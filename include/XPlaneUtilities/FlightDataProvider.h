@@ -4,7 +4,8 @@
 /*
  *   XPlaneUtilities - Flight Data Provider using AviTab patterns
  *   
- *   Provides both reading (DataRefImport) and writing (DataRefExport) capabilities
+ *   Provides reading (DataRefImport), imported dataref read/write (DataRefAccess),
+ *   and custom dataref export (DataRefExport) capabilities
  *   for X-Plane datarefs using proven, battle-tested patterns from AviTab.
  */
 

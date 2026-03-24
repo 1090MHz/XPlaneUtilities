@@ -15,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DataRefAccess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\DataRefExport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,6 +35,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\XPlaneUtilities\DataRefAccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\XPlaneUtilities\DataRefExport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
