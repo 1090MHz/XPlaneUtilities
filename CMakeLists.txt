@@ -29,21 +29,8 @@ else()
     set(USING_VCPKG FALSE)
 endif()
 
-# spdlog
-if(TARGET spdlog::spdlog)
-    message(STATUS "Using spdlog from parent project")
-elseif(USING_VCPKG)
-    find_package(spdlog REQUIRED)
-    message(STATUS "Using spdlog from vcpkg")
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../spdlog/CMakeLists.txt")
-    message(STATUS "Adding spdlog from parent directory")
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../spdlog" "${CMAKE_CURRENT_BINARY_DIR}/spdlog" EXCLUDE_FROM_ALL)
-else()
-    find_package(spdlog REQUIRED)
-    message(STATUS "Using system-installed spdlog")
-endif()
-
-# fmt
+# fmt must be added before spdlog so that when spdlog is configured with
+# SPDLOG_FMT_EXTERNAL_HO=ON its find_package(fmt) call resolves correctly.
 if(TARGET fmt::fmt)
     message(STATUS "Using fmt from parent project")
 elseif(USING_VCPKG)
@@ -57,9 +44,27 @@ else()
     message(STATUS "Using system-installed fmt")
 endif()
 
+# spdlog — added after fmt so SPDLOG_FMT_EXTERNAL_HO=ON can find fmt::fmt
+if(TARGET spdlog::spdlog)
+    message(STATUS "Using spdlog from parent project")
+elseif(USING_VCPKG)
+    find_package(spdlog REQUIRED)
+    message(STATUS "Using spdlog from vcpkg")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../spdlog/CMakeLists.txt")
+    message(STATUS "Adding spdlog from parent directory")
+    # Tell spdlog to use external fmt in header-only mode before adding it.
+    # This causes spdlog's CMake to link fmt::fmt-header-only and define
+    # SPDLOG_FMT_EXTERNAL on the spdlog target (transitively applied to consumers).
+    set(SPDLOG_FMT_EXTERNAL_HO ON CACHE BOOL "Use external fmt header-only library instead of bundled" FORCE)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../spdlog" "${CMAKE_CURRENT_BINARY_DIR}/spdlog" EXCLUDE_FROM_ALL)
+else()
+    find_package(spdlog REQUIRED)
+    message(STATUS "Using system-installed spdlog")
+endif()
+
 # X-Plane SDK path (required for this library)
 if(NOT DEFINED XPLANE_SDK_PATH)
-    set(XPLANE_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../XPSDK" CACHE PATH "Path to X-Plane SDK")
+    set(XPLANE_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libs/XPSDK410" CACHE PATH "Path to X-Plane SDK")
 endif()
 
 # Require X-Plane SDK
@@ -109,10 +114,13 @@ target_include_directories(XPlaneUtilities
 target_link_libraries(XPlaneUtilities
     PRIVATE
         spdlog::spdlog
-        fmt::fmt
+        fmt::fmt-header-only
 )
 
-# Configure spdlog to use external fmt library
+# SPDLOG_FMT_EXTERNAL is the actual preprocessor macro spdlog headers check.
+# When spdlog is added via add_subdirectory with SPDLOG_FMT_EXTERNAL_HO=ON,
+# spdlog propagates this define transitively. Setting it here covers the case
+# where spdlog is provided by a parent/vcpkg without that option.
 target_compile_definitions(XPlaneUtilities
     PRIVATE
         SPDLOG_FMT_EXTERNAL
@@ -136,7 +144,13 @@ endif()
 
 # Compiler-specific options
 if(MSVC)
-    target_compile_options(XPlaneUtilities PRIVATE /W4)
+    target_compile_options(XPlaneUtilities PRIVATE
+        /W4
+        # Treat angle-bracket includes (fmt, spdlog, etc.) as external headers
+        # so MSVC suppresses warnings from third-party code (e.g. C4127 from fmt).
+        /external:anglebrackets
+        /external:W0
+    )
 else()
     target_compile_options(XPlaneUtilities PRIVATE -Wall -Wextra -Wpedantic)
 endif()
