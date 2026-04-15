@@ -47,7 +47,7 @@ void XPlaneLog::init(const std::string& plugin_name)
     std::string sanitized_plugin_name = plugin_name;
     std::replace_if(
         sanitized_plugin_name.begin(), sanitized_plugin_name.end(),
-        [](char c) { return !std::isalnum(c) && c != '_'; }, '_');
+        [](char c) { return !std::isalnum(c) && c != '_' && c != '+' && c != '-'; }, '_');
 
     std::filesystem::path logFileName = sanitized_plugin_name + ".log";
     // Navigate up two levels: from win_x64/ImGuiSimBrief.xpl -> win_x64/ -> ImGuiSimBrief.refactor/
