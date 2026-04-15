@@ -29,8 +29,7 @@ else()
     set(USING_VCPKG FALSE)
 endif()
 
-# fmt must be added before spdlog so that when spdlog is configured with
-# SPDLOG_FMT_EXTERNAL_HO=ON its find_package(fmt) call resolves correctly.
+# fmt must be added before spdlog so spdlog can resolve fmt::fmt correctly.
 if(TARGET fmt::fmt)
     message(STATUS "Using fmt from parent project")
 elseif(USING_VCPKG)
@@ -44,7 +43,7 @@ else()
     message(STATUS "Using system-installed fmt")
 endif()
 
-# spdlog — added after fmt so SPDLOG_FMT_EXTERNAL_HO=ON can find fmt::fmt
+# spdlog — added after fmt so it can consume fmt::fmt
 if(TARGET spdlog::spdlog)
     message(STATUS "Using spdlog from parent project")
 elseif(USING_VCPKG)
@@ -113,18 +112,22 @@ target_include_directories(XPlaneUtilities
 )
 
 # Link dependencies
+# Header-only targets avoid compiled-lib ODR violations when multiple
+# translation units (e.g. plugin.cpp) include spdlog/fmt.
+# PUBLIC propagates both the targets and SPDLOG_FMT_EXTERNAL to dependent targets
+# so they never accidentally pull in the compiled variants.
 target_link_libraries(XPlaneUtilities
-    PRIVATE
-        spdlog::spdlog
+    PUBLIC
+        spdlog::spdlog_header_only
         fmt::fmt-header-only
 )
 
-# SPDLOG_FMT_EXTERNAL is the actual preprocessor macro spdlog headers check.
-# When spdlog is added via add_subdirectory with SPDLOG_FMT_EXTERNAL_HO=ON,
-# spdlog propagates this define transitively. Setting it here covers the case
-# where spdlog is provided by a parent/vcpkg without that option.
+# Ensure spdlog consistently uses the external fmt provided above.
+# SPDLOG_FMT_EXTERNAL tells spdlog to use an external fmt library
+# instead of its bundled copy. We set it explicitly so behavior remains
+# consistent even if dependencies come from a parent project or package manager.
 target_compile_definitions(XPlaneUtilities
-    PRIVATE
+    PUBLIC
         SPDLOG_FMT_EXTERNAL
 )
 
