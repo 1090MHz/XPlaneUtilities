@@ -99,7 +99,7 @@ git clone https://github.com/1090MHz/XPlaneUtilities.git
 cd XPlaneUtilities
 mkdir build && cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=[vcpkg root]/scripts/buildsystems/vcpkg.cmake \
-         -DXPLANE_SDK_PATH=/path/to/XPSDK410 \
+         -DXPLANE_SDK_PATH=/path/to/XPSDK430 \
          -DXPLANE_UTILITIES_BUILD_TESTS=OFF \
          -DXPLANE_UTILITIES_BUILD_EXAMPLES=OFF
 cmake --build . --config Release
