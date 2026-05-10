@@ -127,11 +127,11 @@ target_include_directories(XPlaneUtilities
 
 # X-Plane SDK platform definitions
 if(WIN32)
-    target_compile_definitions(XPlaneUtilities PRIVATE IBM=1 XPLM200=1 XPLM210=1 XPLM300=1 XPLM301=1 XPLM303=1 XPLM400=1)
+    target_compile_definitions(XPlaneUtilities PRIVATE IBM=1 XPLM200=1 XPLM210=1 XPLM300=1 XPLM301=1 XPLM302=1 XPLM303=1 XPLM400=1 XPLM411=1 XPLM420=1 XPLM430=1)
 elseif(APPLE)
-    target_compile_definitions(XPlaneUtilities PRIVATE APL=1 XPLM200=1 XPLM210=1 XPLM300=1 XPLM301=1 XPLM303=1 XPLM400=1)
+    target_compile_definitions(XPlaneUtilities PRIVATE APL=1 XPLM200=1 XPLM210=1 XPLM300=1 XPLM301=1 XPLM302=1 XPLM303=1 XPLM400=1 XPLM411=1 XPLM420=1 XPLM430=1)
 elseif(UNIX)
-    target_compile_definitions(XPlaneUtilities PRIVATE LIN=1 XPLM200=1 XPLM210=1 XPLM300=1 XPLM301=1 XPLM303=1 XPLM400=1)
+    target_compile_definitions(XPlaneUtilities PRIVATE LIN=1 XPLM200=1 XPLM210=1 XPLM300=1 XPLM301=1 XPLM302=1 XPLM303=1 XPLM400=1 XPLM411=1 XPLM420=1 XPLM430=1)
 endif()
 
 # Compiler-specific options
