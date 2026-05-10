@@ -82,8 +82,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM400;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM430;XPLM420;XPLM411;XPLM400;XPLM303;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -96,8 +97,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM400;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM430;XPLM420;XPLM411;XPLM400;XPLM303;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,10 +110,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM400;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM430;XPLM420;XPLM411;XPLM400;XPLM303;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\third_party\libs\XPSDK410\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -126,10 +128,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM400;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM430;XPLM420;XPLM411;XPLM400;XPLM303;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\third_party\libs\XPSDK410\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
