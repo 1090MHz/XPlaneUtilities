@@ -102,6 +102,7 @@ set_target_properties(XPlaneUtilities PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
     OUTPUT_NAME "xplane-utilities"
+    POSITION_INDEPENDENT_CODE ON
 )
 
 # Include directories
