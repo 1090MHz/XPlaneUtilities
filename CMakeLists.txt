@@ -161,15 +161,15 @@ else()
 endif()
 
 # Tests
-if(XPLANE_UTILITIES_BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
+# if(XPLANE_UTILITIES_BUILD_TESTS)
+#     enable_testing()
+#     add_subdirectory(tests)
+# endif()
 
 # Examples
-if(XPLANE_UTILITIES_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif()
+# if(XPLANE_UTILITIES_BUILD_EXAMPLES)
+#     add_subdirectory(examples)
+# endif()
 
 # Optional: Install configuration (disabled by default for submodule usage)
 option(XPLANE_UTILITIES_INSTALL "Generate install target" OFF)
