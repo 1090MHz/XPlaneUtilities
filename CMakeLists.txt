@@ -63,7 +63,7 @@ endif()
 
 # X-Plane SDK path (required for this library)
 if(NOT DEFINED XPLANE_SDK_PATH)
-    set(XPLANE_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libs/XPSDK410" CACHE PATH "Path to X-Plane SDK")
+    set(XPLANE_SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/libs/XPSDK430" CACHE PATH "Path to X-Plane SDK")
 endif()
 
 # Require X-Plane SDK
