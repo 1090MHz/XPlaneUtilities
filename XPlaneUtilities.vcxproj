@@ -85,6 +85,8 @@
       <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM430;XPLM420;XPLM411;XPLM400;XPLM303;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4127;4996</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +102,8 @@
       <PreprocessorDefinitions>FMT_HEADER_ONLY;IBM;XPLM430;XPLM420;XPLM411;XPLM400;XPLM303;XPLM302;XPLM301;XPLM300;XPLM210;XPLM200;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4127;4996</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +120,8 @@
       <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <DisableSpecificWarnings>4127;4996</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +140,8 @@
       <AdditionalIncludeDirectories>..\third_party\libs\XPSDK430\CHeaders\XPLM;..\spdlog\include;..\fmt\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <DisableSpecificWarnings>4127;4996</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

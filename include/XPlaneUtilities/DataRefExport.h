@@ -17,7 +17,7 @@ namespace XPlaneUtilities {
  * 
  * Example usage:
  *   auto myDataRef = std::make_unique<DataRefExport<int>>(
- *       "simbreviloquent/flight_plan/loaded",
+ *       "flight_plan/loaded",
  *       this,
  *       [](void *ref) { return static_cast<MyClass*>(ref)->isLoaded() ? 1 : 0; }
  *   );
