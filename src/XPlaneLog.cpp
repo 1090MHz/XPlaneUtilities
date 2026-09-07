@@ -15,8 +15,8 @@
 #include <spdlog/spdlog.h>                   // For spdlog logging functions
 
 // X-Plane SDK Headers
-#include "XPLMPlugin.h"    // For XPLMGetMyID
-#include "XPLMUtilities.h" // For XPLMDebugString and XPLMGetPluginInfo
+#include <XPLMPlugin.h>    // For XPLMGetMyID
+#include <XPLMUtilities.h> // For XPLMDebugString and XPLMGetPluginInfo
 
 std::shared_ptr<spdlog::logger> XPlaneLog::logger = nullptr;
 
