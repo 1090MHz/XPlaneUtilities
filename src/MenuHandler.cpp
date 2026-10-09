@@ -59,8 +59,8 @@ MenuItem::~MenuItem()
 void MenuItem::addSubItem(const std::string& title, std::function<void()> action)
 {
     m_callbacks.push_back(action);
-    intptr_t idx = m_callbacks.size() - 1;
-    XPLMAppendMenuItem(m_menu_id, title.c_str(), reinterpret_cast<void*>(idx), 0);
+    intptr_t encodedIndex = m_callbacks.size();
+    XPLMAppendMenuItem(m_menu_id, title.c_str(), reinterpret_cast<void*>(encodedIndex), 0);
 }
 
 std::unique_ptr<MenuItem> MenuItem::addSubMenu(const std::string& title)
@@ -76,12 +76,17 @@ void MenuItem::addSeparator()
 
 void MenuItem::menuHandler(void* menuRef, void* itemRef)
 {
-    MenuItem* menu = static_cast<MenuItem*>(menuRef);
-    auto idx = reinterpret_cast<intptr_t>(itemRef);
-
-    if (idx >= 0 && idx < static_cast<intptr_t>(menu->m_callbacks.size()))
+    if (!itemRef)
     {
-        std::function<void()> callback = menu->m_callbacks[idx];
+        return;
+    }
+
+    MenuItem* menu = static_cast<MenuItem*>(menuRef);
+    auto callbackIndex = reinterpret_cast<intptr_t>(itemRef) - 1;
+
+    if (callbackIndex >= 0 && callbackIndex < static_cast<intptr_t>(menu->m_callbacks.size()))
+    {
+        std::function<void()> callback = menu->m_callbacks[callbackIndex];
         if (callback)
         {
             callback();
